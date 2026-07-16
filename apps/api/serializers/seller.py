@@ -22,6 +22,7 @@ class SellerOrderItemSerializer(serializers.ModelSerializer):
 class SellerOrderSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     items = serializers.SerializerMethodField()
+    total_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -32,10 +33,11 @@ class SellerOrderSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "items",
+            "total_price",
         ]
 
     def get_items(self, obj):
-        seller = self.context["request"].user
+        seller = self.context["user"]
 
         items = obj.items.filter(
             product__posted_by=seller,
@@ -46,6 +48,15 @@ class SellerOrderSerializer(serializers.ModelSerializer):
             many=True,
             context=self.context,
         ).data
+
+    def get_total_price(self, obj):
+        total_price = 0
+        order_items = OrderItem.objects.filter(order__id=obj.id)
+
+        for item in order_items:
+            total_price += item.total_price
+
+        return total_price
 
 
 class UserProfileIsSellerSerializer(serializers.ModelSerializer):

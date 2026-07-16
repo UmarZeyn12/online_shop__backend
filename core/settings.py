@@ -155,5 +155,12 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
     "TOKEN_OBTAIN_SERIALIZER": "apps.api.serializers.auth.CustomTokenObtainPairSerializer",
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=36500),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=36500),
 }

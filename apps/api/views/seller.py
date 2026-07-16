@@ -63,7 +63,7 @@ class UserProductsListView(generics.ListAPIView):
 class SellerOrdersListView(generics.ListAPIView):
     serializer_class = seller.SellerOrderSerializer
     permission_classes = [IsSeller]
-    pagination_class = DefaultPagination
+    pagination_class = None
 
     def get_queryset(self):
         return (
@@ -78,6 +78,13 @@ class SellerOrdersListView(generics.ListAPIView):
             .distinct()
             .order_by("-created_at")
         )
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+
+        context["user"] = self.request.user
+
+        return context
 
 
 class SellerStatisticsView(APIView):
