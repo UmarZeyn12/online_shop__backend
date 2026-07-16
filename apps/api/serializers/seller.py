@@ -50,12 +50,11 @@ class SellerOrderSerializer(serializers.ModelSerializer):
         ).data
 
     def get_total_price(self, obj):
-        total_price = 0
-        order_items = OrderItem.objects.filter(order__id=obj.id)
+        seller = self.context["user"]
 
-        for item in order_items:
-            total_price += item.total_price
+        seller_items = obj.items.filter(product__posted_by=seller)
 
+        total_price = sum(item.total_price for item in seller_items)
         return total_price
 
 
